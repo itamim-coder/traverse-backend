@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String                @id @default(uuid())
+  name             String
+  email            String                @unique
+  password         String
+  role             String // 'admin' or 'customer'
+  contactNo        String?
+  address          String?
+  profileImg       String?
+  reviewAndRatings RoomReviewAndRating[]
+  hotelBooks       HotelBook[]
+  tourBooks        TourBook[]
+  createdAt        DateTime              @default(now()) @map("created_at")
+  updatedAt        DateTime              @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Hotel {
+  id        String   @id @default(uuid())
+  title     String
+  rooms     Room[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("hotels")
+}
+
+model Room {
+  id   String @id @default(uuid())
+  name String
+
+  price Float
+
+  hotelId String // Assuming hotelId is a UUID
+
+  // Define a relationship to the Hotel model
+  hotel                Hotel                 @relation(fields: [hotelId], references: [id])
+  roomReviewAndRatings RoomReviewAndRating[]
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+
+  @@map("books")
+}
+
+model RoomReviewAndRating {
+  id     String @id @default(uuid())
+  review String
+  rating Int // Assume ratings are integers from 1 to 5
+  userId String // UUID representing the user who submitted the review
+  roomId String // UUID representing the room being reviewed
+
+  // Define a relationship to the User model
+  user User @relation(fields: [userId], references: [id])
+
+  // Define a relationship to the Room model
+  book      Room     @relation(fields: [roomId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("room_review_and_ratings")
+}
+
+model HotelBook {
+  id         String   @id @default(uuid())
+  userId     String // UUID representing the user who placed the order
+  hotelBooks Json
+  status     String   @default("pending")
+  createdAt  DateTime @default(now())
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  // Define a relationship to the User model
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("hotel_books")
+}
+
+model TourBook {
+  id        String   @id @default(uuid())
+  userId    String // UUID representing the user who placed the order
+  tourBooks Json
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+  // Define a relationship to the User model
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("tour_books")
+}
