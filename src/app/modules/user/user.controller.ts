@@ -10,7 +10,7 @@ import { Prisma } from '@prisma/client';
 const createUser = catchAsync(async (req: Request, res: Response) => {
   try {
     const { ...user } = req.body;
-
+    console.log(user);
     const result = await UserService.createdUser(user);
 
     sendResponse<any>(res, {
@@ -19,7 +19,9 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
       message: 'Users created successfully !',
       data: result
     });
-  } catch (err) {}
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 const getUsers = catchAsync(async (req: Request, res: Response) => {

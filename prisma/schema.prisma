@@ -22,37 +22,54 @@ model User {
   reviewAndRatings RoomReviewAndRating[]
   hotelBooks       HotelBook[]
   tourBooks        TourBook[]
-  createdAt        DateTime              @default(now()) @map("created_at")
-  updatedAt        DateTime              @updatedAt @map("updated_at")
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime?             @updatedAt
 
   @@map("users")
 }
 
 model Hotel {
-  id        String   @id @default(uuid())
-  title     String
-  rooms     Room[]
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  name           String
+  average_rating Float
+  city           String
+  address        String
+  photos         String[]
+
+  cheapest_price String
+  rooms          Room[]
+  featured       Boolean   @default(false)
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime? @updatedAt @map("updated_at")
 
   @@map("hotels")
 }
 
 model Room {
-  id   String @id @default(uuid())
-  name String
-
-  price Float
-
-  hotelId String // Assuming hotelId is a UUID
+  id        String   @id @default(uuid())
+  name      String
+  maxPeople Int
+  price     Float
+  photos    String[]
+  hotelId   String // Assuming hotelId is a UUID
 
   // Define a relationship to the Hotel model
   hotel                Hotel                 @relation(fields: [hotelId], references: [id])
+  RoomNumber           RoomNumber[]
   roomReviewAndRatings RoomReviewAndRating[]
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
 
   @@map("books")
+}
+
+model RoomNumber {
+  id               Int        @id @default(autoincrement())
+  number           Int
+  unavailableDates DateTime[] 
+
+  roomId String
+  room   Room   @relation(fields: [roomId], references: [id])
 }
 
 model RoomReviewAndRating {

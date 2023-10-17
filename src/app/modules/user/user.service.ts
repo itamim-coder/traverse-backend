@@ -11,6 +11,7 @@ const createdUser = async (data: User) => {
   }
 
   data.role = 'customer';
+  console.log('service', data);
   const result = await prisma.user.create({
     data,
     select: {

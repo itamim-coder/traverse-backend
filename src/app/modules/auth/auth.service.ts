@@ -40,8 +40,15 @@ const loginUser = async (payload: any): Promise<any> => {
     config.jwt.secret as Secret,
     config.jwt.expires_in as string
   );
-  return { accessToken };
+  const refreshToken = JwtHelper.createToken(
+    payloadData,
+    config.jwt.refresh_secret as Secret,
+    config.jwt.refresh_expires_in as string
+  );
+  return { accessToken, refreshToken };
 };
+
+
 
 const refreshToken = async (token: string) => {
   if (!token) {
@@ -51,7 +58,7 @@ const refreshToken = async (token: string) => {
   const decodedToken = JwtHelper.decodeToken(token);
   console.log(decodedToken)
   const { email, role, contactNo, name } = decodedToken;
-  if (!email || !role || contactNo || !name) {
+  if (!email || !role  || !name) {
     throw new Error('Invalid token');
   }
 
