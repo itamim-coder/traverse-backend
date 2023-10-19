@@ -29,11 +29,14 @@ model User {
 }
 
 model Location {
-  id       String  @id @default(uuid())
-  name     String
-  image    String
-  featured Boolean @default(false)
-  Hotel    Hotel[]
+  id          String        @id @default(uuid())
+  name        String
+  image       String
+  featured    Boolean       @default(false)
+  Hotel       Hotel[]
+  TourPackage TourPackage[]
+
+  @@map("location")
 }
 
 model Hotel {
@@ -52,7 +55,7 @@ model Hotel {
   updatedAt      DateTime? @updatedAt @map("updated_at")
   locationId     String
 
-  @@map("hotels")
+  @@map("hotel")
 }
 
 model Room {
@@ -70,7 +73,7 @@ model Room {
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
 
-  @@map("books")
+  @@map("room")
 }
 
 model RoomNumber {
@@ -80,6 +83,22 @@ model RoomNumber {
 
   roomId String
   room   Room   @relation(fields: [roomId], references: [id])
+}
+
+model TourPackage {
+  id            String   @id @default(uuid())
+  title         String
+  duration      String
+  images        String[]
+  starting_date String
+  departure     String
+  price         Float
+  available     Boolean
+  location      Location @relation(fields: [locationId], references: [id])
+  locationId    String
+  details       String?
+
+  @@map("tour_package")
 }
 
 model RoomReviewAndRating {

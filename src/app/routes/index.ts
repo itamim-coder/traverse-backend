@@ -1,3 +1,4 @@
+import { TourRoutes } from './../modules/tourPackage/tourPackage.route';
 import express from 'express';
 import { AuthRoutes } from '../modules/auth/auth.route';
 import { HotelRoutes } from '../modules/hotel/hotel.route';
@@ -19,6 +20,10 @@ const moduleRoutes = [
   {
     path: '/hotel',
     route: HotelRoutes
+  },
+  {
+    path: '/tour',
+    route: TourRoutes
   },
   {
     path: '/location',
