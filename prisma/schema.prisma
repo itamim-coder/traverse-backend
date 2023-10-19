@@ -28,6 +28,14 @@ model User {
   @@map("users")
 }
 
+model Location {
+  id       String  @id @default(uuid())
+  name     String
+  image    String
+  featured Boolean @default(false)
+  Hotel    Hotel[]
+}
+
 model Hotel {
   id             String   @id @default(uuid())
   name           String
@@ -38,9 +46,11 @@ model Hotel {
 
   cheapest_price String
   rooms          Room[]
+  location       Location  @relation(fields: [locationId], references: [id])
   featured       Boolean   @default(false)
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime? @updatedAt @map("updated_at")
+  locationId     String
 
   @@map("hotels")
 }
@@ -64,9 +74,9 @@ model Room {
 }
 
 model RoomNumber {
-  id               Int        @id @default(autoincrement())
+  id               String     @id @default(uuid())
   number           Int
-  unavailableDates DateTime[] 
+  unavailableDates DateTime[]
 
   roomId String
   room   Room   @relation(fields: [roomId], references: [id])

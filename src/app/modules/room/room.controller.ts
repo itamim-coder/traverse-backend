@@ -50,8 +50,48 @@ const getRooms = catchAsync(async (req: Request, res: Response) => {
   } catch (err) {}
 });
 
+const getSingleCategoryRoom = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const result = await roomService.getSingleCategoryRoom(req.params.id);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Room category Retrieved successfully !',
+      data: result
+    });
+  } catch (err) {}
+});
+
+const getSameRooms = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const result = await roomService.getSameRooms();
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Room No Retrieved successfully !',
+      data: result
+    });
+  } catch (err) {}
+});
+
+const updateRoomAvailability = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await roomService.updateRoomAvailability(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Room availability updated successfully',
+    data: {
+      result
+    }
+  });
+});
+
 export const roomController = {
   createRoom,
   addRoom,
-  getRooms
+  getRooms,
+  getSameRooms,
+  getSingleCategoryRoom,
+  updateRoomAvailability
 };

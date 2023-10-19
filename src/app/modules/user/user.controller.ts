@@ -4,8 +4,9 @@ import sendResponse from '../../../shared/response';
 
 import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catechAsync';
-import { UserService } from './user.service';
+
 import { Prisma } from '@prisma/client';
+import { UserService } from './user.service';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -23,14 +24,30 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
     res.send(err);
   }
 });
-
-const getUsers = catchAsync(async (req: Request, res: Response) => {
+const createAdmin = catchAsync(async (req: Request, res: Response) => {
   try {
-    const result = await UserService.getUsers();
+    const { ...user } = req.body;
+    console.log(user);
+    const result = await UserService.createAdmin(user);
+
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Users Retrieved successfully !',
+      message: 'Admin created successfully !',
+      data: result
+    });
+  } catch (err) {
+    res.send(err);
+  }
+});
+
+const getAdmins = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const result = await UserService.getAdmins();
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Admin Retrieved successfully !',
       data: result
     });
   } catch (err) {}
@@ -71,7 +88,8 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
 
 export const UserController = {
   createUser,
-  getUsers,
+  createAdmin,
+  getAdmins,
   getSingleUser,
   updateUser
   //   deleteUser

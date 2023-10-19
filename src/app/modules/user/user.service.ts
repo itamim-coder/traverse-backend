@@ -28,8 +28,32 @@ const createdUser = async (data: User) => {
   return result;
 };
 
-const getUsers = async () => {
+const createAdmin = async (data: User) => {
+  if (!data.password) {
+    data.password = config.default_admin_pass as string;
+  }
+
+  data.role = 'admin';
+  console.log('service', data);
+  const result = await prisma.user.create({
+    data,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      contactNo: true,
+      address: true,
+      profileImg: true
+    }
+  });
+  return result;
+};
+const getAdmins = async () => {
   const result = await prisma.user.findMany({
+    where: {
+      role: 'admin'
+    },
     select: {
       id: true,
       name: true,
@@ -43,6 +67,7 @@ const getUsers = async () => {
 
   return result;
 };
+
 
 const getSingleUser = async (id: string) => {
   const result = await prisma.user.findUnique({
@@ -99,7 +124,8 @@ const updateUser = async (id: string, payload: Partial<User>): Promise<User> => 
 
 export const UserService = {
   createdUser,
-  getUsers,
+  getAdmins,
+  createAdmin,
   getSingleUser,
   updateUser
   //   deleteUser

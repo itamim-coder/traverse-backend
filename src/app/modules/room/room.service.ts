@@ -1,4 +1,4 @@
-import { PrismaClient, Room } from '@prisma/client';
+import { Hotel, PrismaClient, Room } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const createRoom = async (data: any): Promise<any> => {
@@ -32,9 +32,39 @@ const getRooms = async () => {
 
   return result;
 };
+const getSingleCategoryRoom = async (id: string) => {
+  const result = await prisma.room.findUnique({
+    where: {
+      id
+    },
+    select: {
+      RoomNumber: true
+    }
+  });
+  return result;
+};
+
+const getSameRooms = async () => {
+  const result = await prisma.roomNumber.findMany({});
+
+  return result;
+};
+
+const updateRoomAvailability = async (id: string, payload: Partial<any>): Promise<any> => {
+  const result = await prisma.roomNumber.update({
+    where: {
+      id
+    },
+    data: payload
+  });
+  return result;
+};
 
 export const roomService = {
   createRoom,
   addRoom,
-  getRooms
+  getRooms,
+  getSameRooms,
+  getSingleCategoryRoom,
+  updateRoomAvailability
 };
