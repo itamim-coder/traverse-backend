@@ -94,6 +94,7 @@ model TourPackage {
   departure     String
   price         Float
   available     Boolean
+  upcoming      Boolean  @default(false)
   location      Location @relation(fields: [locationId], references: [id])
   locationId    String
   details       String?

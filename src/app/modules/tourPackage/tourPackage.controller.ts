@@ -32,6 +32,28 @@ const getTours = catchAsync(async (req: Request, res: Response) => {
     });
   } catch (err) {}
 });
+const getAvailableTours = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const result = await TourPackageService.getAvailableTours();
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Available Tour Retrieved successfully !',
+      data: result
+    });
+  } catch (err) {}
+});
+const getUpcomingTours = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const result = await TourPackageService.getUpcomingTours();
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Upcoming Tour Retrieved successfully !',
+      data: result
+    });
+  } catch (err) {}
+});
 
 const getSingleTour = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -48,5 +70,7 @@ const getSingleTour = catchAsync(async (req: Request, res: Response) => {
 export const TourPackageController = {
   createPackage,
   getTours,
+  getAvailableTours,
+  getUpcomingTours,
   getSingleTour
 };
