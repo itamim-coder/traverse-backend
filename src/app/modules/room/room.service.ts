@@ -37,8 +37,11 @@ const getSingleCategoryRoom = async (id: string) => {
     where: {
       id
     },
-    select: {
-      RoomNumber: true
+
+    include: {
+      RoomNumber: true,
+    
+      hotel: true
     }
   });
   return result;
@@ -46,7 +49,7 @@ const getSingleCategoryRoom = async (id: string) => {
 
 const getSameRooms = async () => {
   const result = await prisma.roomNumber.findMany({});
-
+console.log(result)
   return result;
 };
 

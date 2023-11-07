@@ -61,6 +61,9 @@ const getHotelRooms = catchAsync(async (req: Request, res: Response) => {
   } catch (err) {}
 });
 
+
+
+
 export const hotelController = {
   createHotel,
   createImage,

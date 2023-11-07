@@ -52,6 +52,7 @@ const getRooms = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleCategoryRoom = catchAsync(async (req: Request, res: Response) => {
   try {
+    
     const result = await roomService.getSingleCategoryRoom(req.params.id);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
@@ -64,7 +65,9 @@ const getSingleCategoryRoom = catchAsync(async (req: Request, res: Response) => 
 
 const getSameRooms = catchAsync(async (req: Request, res: Response) => {
   try {
+    console.log("trigger")
     const result = await roomService.getSameRooms();
+    console.log(result)
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,

@@ -121,11 +121,14 @@ model RoomReviewAndRating {
 }
 
 model HotelBook {
-  id         String   @id @default(uuid())
-  userId     String // UUID representing the user who placed the order
-  hotelBooks Json
-  status     String   @default("pending")
-  createdAt  DateTime @default(now())
+  id            String   @id @default(uuid())
+  userId        String // UUID representing the user who placed the order
+  customer_name String
+  phone         String
+  address       String
+  hotelBooks    Json
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
 
   updatedAt DateTime @updatedAt @map("updated_at")
   // Define a relationship to the User model
@@ -135,11 +138,14 @@ model HotelBook {
 }
 
 model TourBook {
-  id        String   @id @default(uuid())
-  userId    String // UUID representing the user who placed the order
-  tourBooks Json
-  status    String   @default("pending")
-  createdAt DateTime @default(now())
+  id            String   @id @default(uuid())
+  userId        String // UUID representing the user who placed the order
+  tourBooks     Json
+  customer_name String
+  phone         String
+  address       String
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
 
   updatedAt DateTime @updatedAt @map("updated_at")
   // Define a relationship to the User model
