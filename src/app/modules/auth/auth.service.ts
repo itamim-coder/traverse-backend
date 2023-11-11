@@ -1,3 +1,4 @@
+import { verify } from 'jsonwebtoken';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { PrismaClient, User } from '@prisma/client';
 import { Secret } from 'jsonwebtoken';
@@ -21,6 +22,10 @@ const loginUser = async (payload: any): Promise<any> => {
 
   if (user) {
     isUserExist = user;
+  }
+
+  if (isUserExist && isUserExist.verified !== true) {
+    throw new Error('Email is not verified please check your email');
   }
 
   if (isUserExist && isUserExist.password !== password) {
@@ -48,17 +53,15 @@ const loginUser = async (payload: any): Promise<any> => {
   return { accessToken, refreshToken };
 };
 
-
-
 const refreshToken = async (token: string) => {
   if (!token) {
     throw new Error('Token is required');
   }
 
   const decodedToken = JwtHelper.decodeToken(token);
-  console.log(decodedToken)
+  console.log(decodedToken);
   const { email, role, contactNo, name } = decodedToken;
-  if (!email || !role  || !name) {
+  if (!email || !role || !name) {
     throw new Error('Invalid token');
   }
 

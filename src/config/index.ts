@@ -9,8 +9,9 @@ export default {
   port: process.env.PORT,
   database_url: process.env.DATABASE_URL,
   default_user_pass: process.env.DEFAULT_USER_PASS,
-
   default_admin_pass: process.env.DEFAULT_ADMIN_PASS,
+  email: process.env.AUTH_EMAIL,
+  pass: process.env.AUTH_PASS,
 
   jwt: {
     secret: process.env.JWT_SECRET,

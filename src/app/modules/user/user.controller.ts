@@ -91,6 +91,7 @@ export const UserController = {
   createAdmin,
   getAdmins,
   getSingleUser,
-  updateUser
+  updateUser,
+
   //   deleteUser
 };

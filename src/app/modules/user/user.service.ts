@@ -27,6 +27,15 @@ const createdUser = async (data: User) => {
 
   return result;
 };
+// const verify = async (data: any) => {
+//   const result = await prisma.userVerification.findUnique({
+//     where: {
+//       id
+//     }
+//   });
+
+//   return result;
+// };
 
 const createAdmin = async (data: User) => {
   if (!data.password) {
@@ -67,7 +76,6 @@ const getAdmins = async () => {
 
   return result;
 };
-
 
 const getSingleUser = async (id: string) => {
   const result = await prisma.user.findUnique({
@@ -127,6 +135,7 @@ export const UserService = {
   getAdmins,
   createAdmin,
   getSingleUser,
-  updateUser
+  updateUser,
+  // verify
   //   deleteUser
 };
