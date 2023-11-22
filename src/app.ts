@@ -6,9 +6,13 @@ import globalExceptionHandler from './app/middlewares/globalExceptionHandler';
 import routes from './app/routes';
 
 const app: Application = express();
+const corsOptions ={
+  origin:'http://localhost:3000', 
+  credentials:true,            //access-control-allow-credentials:true
+  optionSuccessStatus:200
+}
 
-
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());

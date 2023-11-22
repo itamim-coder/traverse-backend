@@ -5,9 +5,11 @@ import config from '../../../config';
 const prisma = new PrismaClient();
 
 const hotelBooking = async (data: any): Promise<any> => {
+  console.log("hotel",data)
   const result = await prisma.hotelBook.create({
     data
   });
+  console.log(result)
   return result;
 };
 

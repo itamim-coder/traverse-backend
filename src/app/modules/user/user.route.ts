@@ -7,6 +7,7 @@ import { UserController } from './user.controller';
 const router = express.Router();
 
 router.get('/admins',  UserController.getAdmins);
+router.get('/profile',  UserController.getProfile);
 router.post('/create-admin', UserController.createAdmin);
 
 router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);

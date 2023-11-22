@@ -53,6 +53,29 @@ const getAdmins = catchAsync(async (req: Request, res: Response) => {
   } catch (err) {}
 });
 
+const getProfile = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: 'Token is required for this operation'
+      });
+    }
+ 
+    const result = await UserService.getProfile(token);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Profile Retrieved successfully !',
+      data: result
+    });
+  } catch (err) {
+    console.log(err)
+  }
+});
+
 const getSingleUser = catchAsync(async (req: Request, res: Response) => {
   try {
     const result = await UserService.getSingleUser(req.params.id);
@@ -92,6 +115,6 @@ export const UserController = {
   getAdmins,
   getSingleUser,
   updateUser,
-
+  getProfile,
   //   deleteUser
 };
