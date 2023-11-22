@@ -7,7 +7,8 @@ import routes from './app/routes';
 
 const app: Application = express();
 const corsOptions ={
-  origin:'http://localhost:3000', 
+  // origin:'http://localhost:3000', 
+  origin:'https://tra-verse.vercel.app', 
   credentials:true,            //access-control-allow-credentials:true
   optionSuccessStatus:200
 }
