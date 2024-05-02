@@ -1,8 +1,11 @@
-import  jwt,{ JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { PrismaClient, User } from '@prisma/client';
 import config from '../../../config';
 import ApiError from '../../../errors/apiError';
 import httpStatus from 'http-status';
+import { UserController } from './user.controller';
+import { authController } from '../auth/auth.controller';
+import { authServices } from '../auth/auth.service';
 
 const prisma = new PrismaClient();
 
@@ -78,27 +81,11 @@ const getAdmins = async () => {
   return result;
 };
 
-const getProfile = async (token: string) => {
-  const secret = config.jwt.secret;
-
-  if (!secret) {
-    throw new Error('JWT secret is not defined!');
-  }
-  const decodedToken: JwtPayload | string = jwt.verify(token, secret);
-  console.log(decodedToken);
-
-  if (typeof decodedToken === 'string') {
-    // Handle the case where decodedToken is a string (e.g., an error occurred during token verification)
-    throw new Error('Invalid token');
-  }
-
-  // Assuming the token contains user information like userId and role
-  const userId = decodedToken.userId;
- 
-
+const getProfile = async (authUser: any) => {
+  console.log('service', authUser.user.userId);
   const result = await prisma.user.findUnique({
     where: {
-      id: userId
+      id: authUser?.user.userId
     }
   });
 

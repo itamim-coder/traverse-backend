@@ -6,16 +6,16 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { ...loginData } = req.body;
     const result = await authServices.loginUser(loginData);
-
-    const { accessToken } = result;
+    console.log('result', result);
+    const { refreshToken } = result;
     console.log(result);
-    // set refresh token into cookie
-    const cookieOptions = {
-      secure: config.env === 'production',
-      httpOnly: true
-    };
 
-    res.cookie('refreshToken', accessToken, cookieOptions);
+    res.cookie('refreshToken', refreshToken, {
+      secure: false,
+      httpOnly: true,
+      // sameSite: 'none',
+      maxAge: 7200000
+    });
     res.send({
       statusCode: 200,
       success: true,
@@ -29,16 +29,16 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const refreshToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    console.log(req)
+    console.log(req);
     const { refreshToken } = req.cookies;
-    const token = req.headers.authorization;
+    // const token = req.headers.authorization;
     const result = await authServices.refreshToken(refreshToken!);
-    const cookieOptions = {
-      secure: config.env === 'production',
-      httpOnly: true
-    };
+    // const cookieOptions = {
+    //   secure: config.env === 'production',
+    //   httpOnly: true
+    // };
 
-    res.cookie('refreshToken', refreshToken, cookieOptions);
+    // res.cookie('refreshToken', refreshToken, cookieOptions);
     res.send({
       statusCode: 200,
       success: true,
