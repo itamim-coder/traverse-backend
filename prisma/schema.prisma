@@ -53,8 +53,8 @@ model Location {
 model Hotel {
   id             String   @id @default(uuid())
   name           String
-  average_rating Float
-  city           String
+  average_rating Float?
+  // city           String
   address        String
   photos         String[]
 

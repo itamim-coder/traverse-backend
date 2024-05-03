@@ -3,6 +3,7 @@ import catchAsync from '../../../shared/catechAsync';
 import sendResponse from '../../../shared/response';
 import httpStatus from 'http-status';
 import { hotelService } from './hotel.service';
+import pick from '../../../shared/pick';
 
 const createHotel = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -20,31 +21,17 @@ const createHotel = catchAsync(async (req: Request, res: Response) => {
     res.send(err);
   }
 });
-const createImage = catchAsync(async (req: Request, res: Response) => {
-  try {
-    const { ...data } = req.body;
-    console.log(req);
-    const result = await hotelService.createImage(data);
-
-    sendResponse<any>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Hotel created successfully !',
-      data: result
-    });
-  } catch (err) {
-    res.send(err);
-  }
-});
 
 const getHotels = catchAsync(async (req: Request, res: Response) => {
   try {
-    const result = await hotelService.getHotels();
+    const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder']);
+    const result = await hotelService.getHotels(options);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Hotel Retrieved successfully !',
-      data: result
+      meta: result.meta,
+      data: result.data
     });
   } catch (err) {}
 });
@@ -61,12 +48,9 @@ const getHotelRooms = catchAsync(async (req: Request, res: Response) => {
   } catch (err) {}
 });
 
-
-
-
 export const hotelController = {
   createHotel,
-  createImage,
+
   getHotels,
   getHotelRooms
 };

@@ -1,5 +1,7 @@
 import { Hotel, PrismaClient } from '@prisma/client';
 import { uploadImagesToImageBB } from '../../../helpers/fileUploader';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
+import { IPaginationOptions } from '../../../interfaces/pagination';
 
 const prisma = new PrismaClient();
 const createHotel = async (data: any): Promise<any> => {
@@ -10,27 +12,31 @@ const createHotel = async (data: any): Promise<any> => {
   return result;
 };
 
-const createImage = async (data: any) => {
-  console.log('service', data);
+const getHotels = async (options: IPaginationOptions) => {
+  const { size, page, skip } = paginationHelpers.calculatePagination(options);
+  const result = await prisma.hotel.findMany({
+    skip,
+    take: size,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { name: 'asc' },
+    include: {
+      location: true
+    }
+  });
+  const total = await prisma.hotel.count({});
+  const totalPage = Math.ceil(total / size);
 
-  // Upload multiple images to ImageBB
-  const imageLinks = await uploadImagesToImageBB(data.photos); // Assuming 'images' is an array of image data
-  console.log(imageLinks);
-  // Create the hotel with the image links
-  // const result = await prisma.hotel.create({
-  //   data: {
-  //     ...data,
-  //     photos: imageLinks, // Update 'images' property with the image links array
-  //   },
-  // });
-
-  // return result;
-};
-
-const getHotels = async () => {
-  const result = await prisma.hotel.findMany({});
-
-  return result;
+  return {
+    meta: {
+      total,
+      page,
+      totalPage,
+      size
+    },
+    data: { result }
+  };
 };
 
 const getHotelRooms = async (id: string) => {
@@ -39,7 +45,7 @@ const getHotelRooms = async (id: string) => {
       id
     },
     include: {
-      rooms: true 
+      rooms: true
     }
   });
   return result;
@@ -47,7 +53,7 @@ const getHotelRooms = async (id: string) => {
 
 export const hotelService = {
   createHotel,
-  createImage,
+
   getHotels,
   getHotelRooms
 };
