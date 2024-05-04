@@ -5,7 +5,7 @@ import { IPaginationOptions } from '../../../interfaces/pagination';
 
 const prisma = new PrismaClient();
 const createHotel = async (data: any): Promise<any> => {
-  console.log('service', data);
+  
   const result = await prisma.hotel.create({
     data
   });
@@ -51,9 +51,20 @@ const getHotelRooms = async (id: string) => {
   return result;
 };
 
+const deleteHotel = async (id: string): Promise<Hotel> => {
+  const deleteHotel = await prisma.hotel.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteHotel;
+};
+
 export const hotelService = {
   createHotel,
 
   getHotels,
-  getHotelRooms
+  getHotelRooms,
+  deleteHotel
 };

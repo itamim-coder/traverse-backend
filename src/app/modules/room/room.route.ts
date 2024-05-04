@@ -9,6 +9,7 @@ router.post('/add-room', roomController.addRoom);
 router.get('/get-room', roomController.getRooms);
 router.get('/room-no', roomController.getSameRooms);
 router.get('/:id', roomController.getSingleCategoryRoom);
+router.delete('/:id', roomController.deleteCategoryRoom);
 router.patch('/room-no/:id', roomController.updateRoomAvailability);
 
 export const RoomRoutes = router;

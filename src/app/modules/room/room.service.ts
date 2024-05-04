@@ -40,7 +40,7 @@ const getSingleCategoryRoom = async (id: string) => {
 
     include: {
       RoomNumber: true,
-    
+
       hotel: true
     }
   });
@@ -49,7 +49,7 @@ const getSingleCategoryRoom = async (id: string) => {
 
 const getSameRooms = async () => {
   const result = await prisma.roomNumber.findMany({});
-console.log(result)
+  console.log(result);
   return result;
 };
 
@@ -63,11 +63,22 @@ const updateRoomAvailability = async (id: string, payload: Partial<any>): Promis
   return result;
 };
 
+const deleteCategoryRoom = async (id: string): Promise<Room> => {
+  const deleteCategoryRoom = await prisma.room.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteCategoryRoom;
+};
+
 export const roomService = {
   createRoom,
   addRoom,
   getRooms,
   getSameRooms,
   getSingleCategoryRoom,
-  updateRoomAvailability
+  updateRoomAvailability,
+  deleteCategoryRoom
 };

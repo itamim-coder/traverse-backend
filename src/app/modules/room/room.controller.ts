@@ -52,7 +52,6 @@ const getRooms = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleCategoryRoom = catchAsync(async (req: Request, res: Response) => {
   try {
-    
     const result = await roomService.getSingleCategoryRoom(req.params.id);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
@@ -65,9 +64,9 @@ const getSingleCategoryRoom = catchAsync(async (req: Request, res: Response) => 
 
 const getSameRooms = catchAsync(async (req: Request, res: Response) => {
   try {
-    console.log("trigger")
+    console.log('trigger');
     const result = await roomService.getSameRooms();
-    console.log(result)
+    console.log(result);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -90,11 +89,23 @@ const updateRoomAvailability = catchAsync(async (req: Request, res: Response) =>
   });
 });
 
+const deleteCategoryRoom = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await roomService.deleteCategoryRoom(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Room Category deleted successfully',
+    data: result
+  });
+});
+
 export const roomController = {
   createRoom,
   addRoom,
   getRooms,
   getSameRooms,
   getSingleCategoryRoom,
-  updateRoomAvailability
+  updateRoomAvailability,
+  deleteCategoryRoom
 };

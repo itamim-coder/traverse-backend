@@ -7,7 +7,7 @@ import { hotelValidation } from './hotel.validation';
 const router = express.Router();
 router.get('/:id', hotelController.getHotelRooms);
 router.post('', hotelController.createHotel);
-
 router.get('', hotelController.getHotels);
+router.delete('/:id', hotelController.deleteHotel);
 
 export const HotelRoutes = router;

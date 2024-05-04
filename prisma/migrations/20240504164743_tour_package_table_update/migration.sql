@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "tour_package" ALTER COLUMN "price" SET DATA TYPE TEXT,
+ALTER COLUMN "available" DROP NOT NULL,
+ALTER COLUMN "upcoming" DROP NOT NULL;

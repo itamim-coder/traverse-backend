@@ -30,11 +30,11 @@ model User {
 }
 
 model UserOtp {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   otp       String
   expireAt  DateTime
-  createdAt DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("otp")
 }
@@ -72,14 +72,14 @@ model Hotel {
 model Room {
   id        String   @id @default(uuid())
   name      String
-  maxPeople Int
-  price     Float
+  maxPeople String
+  price     String
   photos    String[]
   hotelId   String // Assuming hotelId is a UUID
 
   // Define a relationship to the Hotel model
   hotel                Hotel                 @relation(fields: [hotelId], references: [id])
-  RoomNumber           RoomNumber[]
+  RoomNumber           RoomNumber[]         
   roomReviewAndRatings RoomReviewAndRating[]
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
@@ -89,11 +89,11 @@ model Room {
 
 model RoomNumber {
   id               String     @id @default(uuid())
-  number           Int
+  number           String
   unavailableDates DateTime[]
 
   roomId String
-  room   Room   @relation(fields: [roomId], references: [id])
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
 
 model TourPackage {
@@ -103,9 +103,9 @@ model TourPackage {
   images        String[]
   starting_date String
   departure     String
-  price         Float
-  available     Boolean
-  upcoming      Boolean  @default(false)
+  price         String
+  available     Boolean?
+  upcoming      Boolean?  @default(false)
   location      Location @relation(fields: [locationId], references: [id])
   locationId    String
   details       String?
