@@ -6,6 +6,7 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 const verifyToken = (token: string, secret: Secret) => {
   try {
     const isVerified = verify(token, secret);
+    console.log(isVerified);
     return isVerified as any;
   } catch (error) {
     return new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token');

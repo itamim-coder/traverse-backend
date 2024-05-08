@@ -6,6 +6,8 @@ import httpStatus from 'http-status';
 import { UserController } from './user.controller';
 import { authController } from '../auth/auth.controller';
 import { authServices } from '../auth/auth.service';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
 
 const prisma = new PrismaClient();
 
@@ -14,7 +16,7 @@ const createdUser = async (data: User) => {
     data.password = config.default_user_pass as string;
   }
 
-  data.role = 'customer';
+  data.role = 'user';
   console.log('service', data);
   const result = await prisma.user.create({
     data,
@@ -120,6 +122,40 @@ const updateUser = async (id: string, payload: Partial<User>): Promise<User> => 
   return result;
 };
 
+const getUsers = async (options: IPaginationOptions) => {
+  const { size, page, skip } = paginationHelpers.calculatePagination(options);
+  const result = await prisma.user.findMany({
+    skip,
+    take: size,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { createdAt: 'asc' }
+  });
+  const total = await prisma.user.count({});
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    meta: {
+      total,
+      page,
+      totalPage,
+      size
+    },
+    data: { result }
+  };
+};
+
+const deleteUser = async (id: string): Promise<User> => {
+  const deleteUser = await prisma.user.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteUser;
+};
+
 // const deleteUser = async (id: string) => {
 //   try {
 //     await prisma.$transaction(async (transaction) => {
@@ -151,7 +187,8 @@ export const UserService = {
   createAdmin,
   getSingleUser,
   updateUser,
-  getProfile
-  // verify
-  //   deleteUser
+  getProfile,
+  getUsers,
+
+  deleteUser
 };

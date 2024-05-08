@@ -47,6 +47,7 @@ model Location {
   Hotel       Hotel[]
   TourPackage TourPackage[]
 
+
   @@map("location")
 }
 
@@ -79,7 +80,7 @@ model Room {
 
   // Define a relationship to the Hotel model
   hotel                Hotel                 @relation(fields: [hotelId], references: [id])
-  RoomNumber           RoomNumber[]         
+  RoomNumber           RoomNumber[]
   roomReviewAndRatings RoomReviewAndRating[]
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
@@ -104,14 +105,16 @@ model TourPackage {
   starting_date String
   departure     String
   price         String
-  available     Boolean?
-  upcoming      Boolean?  @default(false)
-  location      Location @relation(fields: [locationId], references: [id])
+  available     Boolean  @default(false)
+  upcoming      Boolean  @default(false)
   locationId    String
+  location      Location @relation(fields: [locationId], references: [id])
   details       String?
 
-  @@map("tour_package")
+  @@map("tourPackage")
 }
+
+
 
 model RoomReviewAndRating {
   id     String @id @default(uuid())

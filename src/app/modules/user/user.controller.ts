@@ -7,6 +7,7 @@ import catchAsync from '../../../shared/catechAsync';
 
 import { Prisma } from '@prisma/client';
 import { UserService } from './user.service';
+import pick from '../../../shared/pick';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -102,16 +103,30 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     data: {}
   });
 });
-// const deleteUser= catchAsync(async (req: Request, res: Response) => {
-//   const { id } = req.params;
-//   const result = await UserService.deleteUser(id);
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'User delete successfully',
-//     data: {}
-//   });
-// });
+
+const getUsers = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder']);
+    const result = await UserService.getUsers(options);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Users Retrieved successfully !',
+      meta: result.meta,
+      data: result.data
+    });
+  } catch (err) {}
+});
+const deleteUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.deleteUser(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User delete successfully',
+    data: {}
+  });
+});
 
 export const UserController = {
   createUser,
@@ -119,6 +134,7 @@ export const UserController = {
   getAdmins,
   getSingleUser,
   updateUser,
-  getProfile
-  //   deleteUser
+  getProfile,
+  getUsers,
+  deleteUser
 };
