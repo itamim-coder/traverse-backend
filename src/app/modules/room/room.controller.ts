@@ -99,6 +99,16 @@ const deleteCategoryRoom = catchAsync(async (req: Request, res: Response) => {
     data: result
   });
 });
+const deleteRoomNo = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await roomService.deleteRoomNo(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Room No deleted successfully',
+    data: result
+  });
+});
 
 export const roomController = {
   createRoom,
@@ -107,5 +117,6 @@ export const roomController = {
   getSameRooms,
   getSingleCategoryRoom,
   updateRoomAvailability,
-  deleteCategoryRoom
+  deleteCategoryRoom,
+  deleteRoomNo
 };

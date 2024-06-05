@@ -40,13 +40,13 @@ if (!secret) {
   const userId = decodedToken.userId;
   const userRole = decodedToken.role;
 
-  if (userRole == 'customer') {
+  if (userRole == 'user') {
     const result = await prisma.hotelBook.findMany({
       where: {
         userId: userId
       }
     });
-    console.log('customer');
+    console.log('user');
     return result;
   }
 
@@ -56,6 +56,8 @@ if (!secret) {
     return result;
   }
 };
+
+
 const getTourBookings = async (token: string) => {
   const secret = config.jwt.secret;
 
@@ -74,13 +76,13 @@ if (!secret) {
   const userId = decodedToken.userId;
   const userRole = decodedToken.role;
 
-  if (userRole == 'customer') {
+  if (userRole == 'user') {
     const result = await prisma.tourBook.findMany({
       where: {
         userId: userId
       }
     });
-    console.log('customer');
+    console.log('user');
     return result;
   }
 

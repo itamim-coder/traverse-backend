@@ -11,7 +11,7 @@ router.get('/profile', auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.USER), UserCont
 router.post('/create-admin', UserController.createAdmin);
 
 router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
-router.patch('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.updateUser);
+router.patch('/:id', UserController.updateUser);
 router.delete('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.deleteUser);
 
 export const UserRoutes = router;
