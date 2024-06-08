@@ -4,6 +4,7 @@ import sendResponse from '../../../shared/response';
 import httpStatus from 'http-status';
 
 import { BookingService } from './booking.service';
+import pick from '../../../shared/pick';
 
 const hotelBooking = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -41,6 +42,7 @@ const tourBooking = catchAsync(async (req: Request, res: Response) => {
 const getHotelBookings = catchAsync(async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization;
+    const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder']);
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -48,21 +50,24 @@ const getHotelBookings = catchAsync(async (req: Request, res: Response) => {
         message: 'Token is required for this operation'
       });
     }
- 
-    const result = await BookingService.getHotelBookings(token);
+
+    const result = await BookingService.getHotelBookings(token, options);
+    console.log(result);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Hotel Booking Retrieved successfully !',
-      data: result
+      meta: result?.meta,
+      data: result?.data
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 });
 const getTourBookings = catchAsync(async (req: Request, res: Response) => {
   try {
     const token = req.headers.authorization;
+    const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder']);
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -70,12 +75,13 @@ const getTourBookings = catchAsync(async (req: Request, res: Response) => {
         message: 'Token is required for this operation'
       });
     }
-    const result = await BookingService.getTourBookings(token);
+    const result = await BookingService.getTourBookings(token, options);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Tour Booking Retrieved successfully !',
-      data: result
+      meta: result?.meta,
+      data: result?.data
     });
   } catch (err) {}
 });
