@@ -9,6 +9,7 @@ router.get('/', UserController.getUsers);
 router.get('/admins', UserController.getAdmins);
 router.get('/profile', auth(ENUM_USER_ROLE.ADMIN, ENUM_USER_ROLE.USER), UserController.getProfile);
 router.post('/create-admin', UserController.createAdmin);
+router.get('/total-users', UserController.getTotalUsers);
 
 router.get('/:id', auth(ENUM_USER_ROLE.ADMIN), UserController.getSingleUser);
 router.patch('/:id', UserController.updateUser);

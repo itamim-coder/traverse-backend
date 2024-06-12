@@ -128,6 +128,32 @@ const deleteUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getTotalUsers = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: 'Token is required for this operation'
+      });
+    }
+
+    const result = await UserService.getTotalUsers(token);
+    console.log(result);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Users count Retrieved successfully !',
+
+      data: result
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export const UserController = {
   createUser,
   createAdmin,
@@ -136,5 +162,6 @@ export const UserController = {
   updateUser,
   getProfile,
   getUsers,
-  deleteUser
+  deleteUser,
+  getTotalUsers
 };

@@ -89,6 +89,32 @@ const getHotelBookings = async (token: string, options: IPaginationOptions) => {
     };
   }
 };
+const getTotalBookings = async (token: string) => {
+  const secret = config.jwt.secret;
+
+  if (!secret) {
+    throw new Error('JWT secret is not defined!');
+  }
+  const decodedToken: JwtPayload | string = jwt.verify(token, secret);
+
+  if (typeof decodedToken === 'string') {
+    // Handle the case where decodedToken is a string (e.g., an error occurred during token verification)
+    throw new Error('Invalid token');
+  }
+
+  // Assuming the token contains user information like userId and role
+  const userId = decodedToken.userId;
+  const userRole = decodedToken.role;
+  console.log(userRole);
+
+  if (userRole == 'admin') {
+    const totalHotelBooks = await prisma.hotelBook.count({});
+    const totalTourBooks = await prisma.tourBook.count({});
+    const total = totalHotelBooks + totalTourBooks;
+    console.log('admin');
+    return total;
+  }
+};
 
 const getTourBookings = async (token: string, options: IPaginationOptions) => {
   const secret = config.jwt.secret;
@@ -162,5 +188,6 @@ export const BookingService = {
   hotelBooking,
   tourBooking,
   getHotelBookings,
-  getTourBookings
+  getTourBookings,
+  getTotalBookings
 };

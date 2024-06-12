@@ -8,9 +8,9 @@ import pick from '../../../shared/pick';
 const createPackage = catchAsync(async (req: Request, res: Response) => {
   try {
     const { ...data } = req.body;
-   
+
     const result = await TourPackageService.createPackage(data);
-   
+
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -93,6 +93,32 @@ const updateTour = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getTotalTours = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: 'Token is required for this operation'
+      });
+    }
+
+    const result = await TourPackageService.getTotalTours(token);
+    console.log(result);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Tour count Retrieved successfully !',
+
+      data: result
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export const TourPackageController = {
   createPackage,
   getTours,
@@ -100,5 +126,6 @@ export const TourPackageController = {
   getUpcomingTours,
   getSingleTour,
   deleteTour,
-  updateTour
+  updateTour,
+  getTotalTours
 };

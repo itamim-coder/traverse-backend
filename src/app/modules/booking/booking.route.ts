@@ -20,6 +20,12 @@ router.get(
 
   BookingController.getTourBookings
 );
+router.get(
+  '/total-bookings',
+  auth(ENUM_USER_ROLE.ADMIN),
+
+  BookingController.getTotalBookings
+);
 // router.get('/', LocationController.getLocation);
 
 export const BookingRoutes = router;

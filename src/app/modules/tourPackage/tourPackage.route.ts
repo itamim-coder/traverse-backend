@@ -7,6 +7,7 @@ router.post('/create-tour', TourPackageController.createPackage);
 router.get('/', TourPackageController.getTours);
 router.get('/available', TourPackageController.getAvailableTours);
 router.get('/upcoming', TourPackageController.getUpcomingTours);
+router.get('/total-tours', TourPackageController.getTotalTours);
 router.get('/:id', TourPackageController.getSingleTour);
 router.delete('/:id', TourPackageController.deleteTour);
 router.patch('/:id', TourPackageController.updateTour);
