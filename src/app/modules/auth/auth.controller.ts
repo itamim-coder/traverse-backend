@@ -14,7 +14,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       secure: false,
       httpOnly: true,
       // sameSite: 'none',
-      maxAge: 7200000
+      maxAge: 31536000000
     });
     res.send({
       statusCode: 200,
