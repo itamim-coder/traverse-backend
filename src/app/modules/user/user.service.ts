@@ -1,8 +1,13 @@
-import  jwt,{ JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { PrismaClient, User } from '@prisma/client';
 import config from '../../../config';
 import ApiError from '../../../errors/apiError';
 import httpStatus from 'http-status';
+import { UserController } from './user.controller';
+import { authController } from '../auth/auth.controller';
+import { authServices } from '../auth/auth.service';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
 
 const prisma = new PrismaClient();
 
@@ -11,7 +16,7 @@ const createdUser = async (data: User) => {
     data.password = config.default_user_pass as string;
   }
 
-  data.role = 'customer';
+  data.role = 'user';
   console.log('service', data);
   const result = await prisma.user.create({
     data,
@@ -78,27 +83,11 @@ const getAdmins = async () => {
   return result;
 };
 
-const getProfile = async (token: string) => {
-  const secret = config.jwt.secret;
-
-  if (!secret) {
-    throw new Error('JWT secret is not defined!');
-  }
-  const decodedToken: JwtPayload | string = jwt.verify(token, secret);
-  console.log(decodedToken);
-
-  if (typeof decodedToken === 'string') {
-    // Handle the case where decodedToken is a string (e.g., an error occurred during token verification)
-    throw new Error('Invalid token');
-  }
-
-  // Assuming the token contains user information like userId and role
-  const userId = decodedToken.userId;
- 
-
+const getProfile = async (authUser: any) => {
+  console.log('service', authUser.user.userId);
   const result = await prisma.user.findUnique({
     where: {
-      id: userId
+      id: authUser?.user.userId
     }
   });
 
@@ -133,6 +122,40 @@ const updateUser = async (id: string, payload: Partial<User>): Promise<User> => 
   return result;
 };
 
+const getUsers = async (options: IPaginationOptions) => {
+  const { size, page, skip } = paginationHelpers.calculatePagination(options);
+  const result = await prisma.user.findMany({
+    skip,
+    take: size,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { createdAt: 'asc' }
+  });
+  const total = await prisma.user.count({});
+  const totalPage = Math.ceil(total / size);
+
+  return {
+    meta: {
+      total,
+      page,
+      totalPage,
+      size
+    },
+    data: { result }
+  };
+};
+
+const deleteUser = async (id: string): Promise<User> => {
+  const deleteUser = await prisma.user.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteUser;
+};
+
 // const deleteUser = async (id: string) => {
 //   try {
 //     await prisma.$transaction(async (transaction) => {
@@ -158,13 +181,40 @@ const updateUser = async (id: string, payload: Partial<User>): Promise<User> => 
 //   }
 // };
 
+const getTotalUsers = async (token: string) => {
+  const secret = config.jwt.secret;
+
+  if (!secret) {
+    throw new Error('JWT secret is not defined!');
+  }
+  const decodedToken: JwtPayload | string = jwt.verify(token, secret);
+
+  if (typeof decodedToken === 'string') {
+    // Handle the case where decodedToken is a string (e.g., an error occurred during token verification)
+    throw new Error('Invalid token');
+  }
+
+  // Assuming the token contains user information like userId and role
+  const userId = decodedToken.userId;
+  const userRole = decodedToken.role;
+  console.log(userRole);
+
+  if (userRole == 'admin') {
+    const total = await prisma.location.count({});
+
+    return total;
+  }
+};
+
 export const UserService = {
   createdUser,
   getAdmins,
   createAdmin,
   getSingleUser,
   updateUser,
-  getProfile
-  // verify
-  //   deleteUser
+  getProfile,
+  getUsers,
+
+  deleteUser,
+  getTotalUsers
 };

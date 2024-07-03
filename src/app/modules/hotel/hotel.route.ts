@@ -5,9 +5,10 @@ import validateRequest from '../../middlewares/validateRequest';
 import { hotelValidation } from './hotel.validation';
 
 const router = express.Router();
+router.get('/total-hotels', hotelController.getTotalHotels);
 router.get('/:id', hotelController.getHotelRooms);
 router.post('', hotelController.createHotel);
-router.post('/image', hotelController.createImage);
 router.get('', hotelController.getHotels);
+router.delete('/:id', hotelController.deleteHotel);
 
 export const HotelRoutes = router;

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "room" ALTER COLUMN "maxPeople" SET DATA TYPE TEXT,
+ALTER COLUMN "price" SET DATA TYPE TEXT;

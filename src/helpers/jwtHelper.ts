@@ -6,18 +6,15 @@ import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 const verifyToken = (token: string, secret: Secret) => {
   try {
     const isVerified = verify(token, secret);
+    console.log(isVerified);
     return isVerified as any;
   } catch (error) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token');
+    return new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token');
   }
 };
 
-const createToken = (
-  payload: Record<string, unknown>,
-  secret: Secret,
-  expireTime: string
-): string => {
-  return jwt.sign(payload, secret, { expiresIn: expireTime });
+const createToken = (payload: any, secret: Secret, expireTime: string): string => {
+  return jwt.sign(payload, secret, { algorithm: 'HS256', expiresIn: expireTime });
 };
 
 const decodeToken = (token: string): JwtPayload => {

@@ -1,36 +1,43 @@
 import { Hotel, PrismaClient } from '@prisma/client';
 import { uploadImagesToImageBB } from '../../../helpers/fileUploader';
+import { paginationHelpers } from '../../../helpers/paginationHelper';
+import { IPaginationOptions } from '../../../interfaces/pagination';
+import config from '../../../config';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 const createHotel = async (data: any): Promise<any> => {
-  console.log('service', data);
   const result = await prisma.hotel.create({
     data
   });
   return result;
 };
 
-const createImage = async (data: any) => {
-  console.log('service', data);
+const getHotels = async (options: IPaginationOptions) => {
+  const { size, page, skip } = paginationHelpers.calculatePagination(options);
+  const result = await prisma.hotel.findMany({
+    skip,
+    take: size,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { name: 'asc' },
+    include: {
+      location: true
+    }
+  });
+  const total = await prisma.hotel.count({});
+  const totalPage = Math.ceil(total / size);
 
-  // Upload multiple images to ImageBB
-  const imageLinks = await uploadImagesToImageBB(data.photos); // Assuming 'images' is an array of image data
-  console.log(imageLinks);
-  // Create the hotel with the image links
-  // const result = await prisma.hotel.create({
-  //   data: {
-  //     ...data,
-  //     photos: imageLinks, // Update 'images' property with the image links array
-  //   },
-  // });
-
-  // return result;
-};
-
-const getHotels = async () => {
-  const result = await prisma.hotel.findMany({});
-
-  return result;
+  return {
+    meta: {
+      total,
+      page,
+      totalPage,
+      size
+    },
+    data: { result }
+  };
 };
 
 const getHotelRooms = async (id: string) => {
@@ -39,15 +46,52 @@ const getHotelRooms = async (id: string) => {
       id
     },
     include: {
-      rooms: true 
+      rooms: true
     }
   });
   return result;
 };
 
+const deleteHotel = async (id: string): Promise<Hotel> => {
+  const deleteHotel = await prisma.hotel.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteHotel;
+};
+
+const getTotalHotels = async (token: string) => {
+  const secret = config.jwt.secret;
+
+  if (!secret) {
+    throw new Error('JWT secret is not defined!');
+  }
+  const decodedToken: JwtPayload | string = jwt.verify(token, secret);
+
+  if (typeof decodedToken === 'string') {
+    // Handle the case where decodedToken is a string (e.g., an error occurred during token verification)
+    throw new Error('Invalid token');
+  }
+
+  // Assuming the token contains user information like userId and role
+  const userId = decodedToken.userId;
+  const userRole = decodedToken.role;
+  console.log(userRole);
+
+  if (userRole == 'admin') {
+    const total = await prisma.hotel.count({});
+
+    return total;
+  }
+};
+
 export const hotelService = {
   createHotel,
-  createImage,
+
   getHotels,
-  getHotelRooms
+  getHotelRooms,
+  deleteHotel,
+  getTotalHotels
 };

@@ -7,6 +7,7 @@ import catchAsync from '../../../shared/catechAsync';
 
 import { Prisma } from '@prisma/client';
 import { UserService } from './user.service';
+import pick from '../../../shared/pick';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -55,16 +56,20 @@ const getAdmins = catchAsync(async (req: Request, res: Response) => {
 
 const getProfile = catchAsync(async (req: Request, res: Response) => {
   try {
-    const token = req.headers.authorization;
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        statusCode: 401,
-        message: 'Token is required for this operation'
-      });
-    }
- 
-    const result = await UserService.getProfile(token);
+    console.log(req);
+    const user = req;
+    // const token = req.headers.authorization;
+    // console.log(token);
+    // const refreshToken = req.cookies.refreshToken;
+    // if (!token) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     statusCode: 401,
+    //     message: 'Token is required for this operation'
+    //   });
+    // }
+
+    const result = await UserService.getProfile(req);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -72,7 +77,7 @@ const getProfile = catchAsync(async (req: Request, res: Response) => {
       data: result
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 });
 
@@ -98,16 +103,56 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     data: {}
   });
 });
-// const deleteUser= catchAsync(async (req: Request, res: Response) => {
-//   const { id } = req.params;
-//   const result = await UserService.deleteUser(id);
-//   sendResponse(res, {
-//     statusCode: httpStatus.OK,
-//     success: true,
-//     message: 'User delete successfully',
-//     data: {}
-//   });
-// });
+
+const getUsers = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder']);
+    const result = await UserService.getUsers(options);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Users Retrieved successfully !',
+      meta: result.meta,
+      data: result.data
+    });
+  } catch (err) {}
+});
+const deleteUser = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await UserService.deleteUser(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User delete successfully',
+    data: {}
+  });
+});
+
+const getTotalUsers = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: 'Token is required for this operation'
+      });
+    }
+
+    const result = await UserService.getTotalUsers(token);
+    console.log(result);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Users count Retrieved successfully !',
+
+      data: result
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 export const UserController = {
   createUser,
@@ -116,5 +161,7 @@ export const UserController = {
   getSingleUser,
   updateUser,
   getProfile,
-  //   deleteUser
+  getUsers,
+  deleteUser,
+  getTotalUsers
 };

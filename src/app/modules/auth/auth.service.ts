@@ -54,12 +54,12 @@ const loginUser = async (payload: any): Promise<any> => {
   return { accessToken, refreshToken };
 };
 
-const refreshToken = async (token: string) => {
-  if (!token) {
-    throw new Error('Token is required');
+const refreshToken = async (refreshToken: string) => {
+  if (!refreshToken) {
+    throw new Error('Refresh Token is required');
   }
 
-  const decodedToken = JwtHelper.decodeToken(token);
+  const decodedToken = JwtHelper.decodeToken(refreshToken);
   console.log(decodedToken);
   const { email, role, contactNo, name, userId } = decodedToken;
   if (!email || !role || !name || !userId) {

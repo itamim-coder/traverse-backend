@@ -3,6 +3,7 @@ import catchAsync from '../../../shared/catechAsync';
 import sendResponse from '../../../shared/response';
 import httpStatus from 'http-status';
 import { hotelService } from './hotel.service';
+import pick from '../../../shared/pick';
 
 const createHotel = catchAsync(async (req: Request, res: Response) => {
   try {
@@ -20,31 +21,17 @@ const createHotel = catchAsync(async (req: Request, res: Response) => {
     res.send(err);
   }
 });
-const createImage = catchAsync(async (req: Request, res: Response) => {
-  try {
-    const { ...data } = req.body;
-    console.log(req);
-    const result = await hotelService.createImage(data);
-
-    sendResponse<any>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Hotel created successfully !',
-      data: result
-    });
-  } catch (err) {
-    res.send(err);
-  }
-});
 
 const getHotels = catchAsync(async (req: Request, res: Response) => {
   try {
-    const result = await hotelService.getHotels();
+    const options = pick(req.query, ['size', 'page', 'sortBy', 'sortOrder']);
+    const result = await hotelService.getHotels(options);
     sendResponse<any>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Hotel Retrieved successfully !',
-      data: result
+      meta: result.meta,
+      data: result.data
     });
   } catch (err) {}
 });
@@ -61,12 +48,48 @@ const getHotelRooms = catchAsync(async (req: Request, res: Response) => {
   } catch (err) {}
 });
 
+const deleteHotel = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await hotelService.deleteHotel(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Hotel deleted successfully',
+    data: result
+  });
+});
 
+const getTotalHotels = catchAsync(async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization;
 
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        statusCode: 401,
+        message: 'Token is required for this operation'
+      });
+    }
+
+    const result = await hotelService.getTotalHotels(token);
+    console.log(result);
+    sendResponse<any>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Hotel count Retrieved successfully !',
+
+      data: result
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 export const hotelController = {
   createHotel,
-  createImage,
+
   getHotels,
-  getHotelRooms
+  getHotelRooms,
+  deleteHotel,
+  getTotalHotels
 };

@@ -1,4 +1,4 @@
-import { Hotel, PrismaClient, Room } from '@prisma/client';
+import { Hotel, PrismaClient, Room, RoomNumber } from '@prisma/client';
 
 const prisma = new PrismaClient();
 const createRoom = async (data: any): Promise<any> => {
@@ -40,7 +40,7 @@ const getSingleCategoryRoom = async (id: string) => {
 
     include: {
       RoomNumber: true,
-    
+
       hotel: true
     }
   });
@@ -49,18 +49,74 @@ const getSingleCategoryRoom = async (id: string) => {
 
 const getSameRooms = async () => {
   const result = await prisma.roomNumber.findMany({});
-console.log(result)
+  console.log(result);
   return result;
 };
 
-const updateRoomAvailability = async (id: string, payload: Partial<any>): Promise<any> => {
+const getRoomDetails = async (id: string): Promise<any> => {
+  const room = await prisma.roomNumber.findUnique({
+    where: {
+      id
+    }
+  });
+  return room;
+};
+const addUnavailableDates = (existingDates: string[], newDates: string[]): string[] => {
+  console.log(existingDates);
+  console.log('new', newDates);
+  if (!Array.isArray(existingDates)) {
+    existingDates = [];
+  }
+  newDates.forEach((date) => {
+    if (!existingDates.includes(date)) {
+      existingDates.push(date);
+    }
+  });
+  console.log('existing dates', existingDates);
+  return existingDates;
+};
+
+const updateRoomAvailability = async (
+  id: string,
+  newDates: { unavailableDates: string[] }
+): Promise<any> => {
+  const room = await getRoomDetails(id);
+
+  if (!room) {
+    throw new Error(`Room with id ${id} not found`);
+  }
+
+  const updatedDates = addUnavailableDates(room.unavailableDates, newDates.unavailableDates);
+
   const result = await prisma.roomNumber.update({
     where: {
       id
     },
-    data: payload
+    data: {
+      unavailableDates: updatedDates
+    }
   });
+
   return result;
+};
+
+const deleteCategoryRoom = async (id: string): Promise<Room> => {
+  const deleteCategoryRoom = await prisma.room.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteCategoryRoom;
+};
+const deleteRoomNo = async (id: string): Promise<RoomNumber> => {
+  const deleteRoom = await prisma.roomNumber.delete({
+    where: {
+      id
+    }
+  });
+
+  return deleteRoom;
 };
 
 export const roomService = {
@@ -69,5 +125,7 @@ export const roomService = {
   getRooms,
   getSameRooms,
   getSingleCategoryRoom,
-  updateRoomAvailability
+  updateRoomAvailability,
+  deleteCategoryRoom,
+  deleteRoomNo
 };

@@ -15,7 +15,7 @@ model User {
   name             String
   email            String                @unique
   password         String
-  role             String // 'admin' or 'customer'
+  role             String // 'admin' or 'user'
   verified         Boolean               @default(false)
   contactNo        String?
   address          String?
@@ -30,11 +30,11 @@ model User {
 }
 
 model UserOtp {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String   @id @default(uuid())
+  email     String   @unique
   otp       String
   expireAt  DateTime
-  createdAt DateTime  @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at")
 
   @@map("otp")
 }
@@ -47,14 +47,15 @@ model Location {
   Hotel       Hotel[]
   TourPackage TourPackage[]
 
+
   @@map("location")
 }
 
 model Hotel {
   id             String   @id @default(uuid())
   name           String
-  average_rating Float
-  city           String
+  average_rating Float?
+  // city           String
   address        String
   photos         String[]
 
@@ -72,8 +73,8 @@ model Hotel {
 model Room {
   id        String   @id @default(uuid())
   name      String
-  maxPeople Int
-  price     Float
+  maxPeople String
+  price     String
   photos    String[]
   hotelId   String // Assuming hotelId is a UUID
 
@@ -89,11 +90,11 @@ model Room {
 
 model RoomNumber {
   id               String     @id @default(uuid())
-  number           Int
+  number           String
   unavailableDates DateTime[]
 
   roomId String
-  room   Room   @relation(fields: [roomId], references: [id])
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
 
 model TourPackage {
@@ -103,15 +104,17 @@ model TourPackage {
   images        String[]
   starting_date String
   departure     String
-  price         Float
-  available     Boolean
+  price         String
+  available     Boolean  @default(false)
   upcoming      Boolean  @default(false)
-  location      Location @relation(fields: [locationId], references: [id])
   locationId    String
+  location      Location @relation(fields: [locationId], references: [id])
   details       String?
 
-  @@map("tour_package")
+  @@map("tourPackage")
 }
+
+
 
 model RoomReviewAndRating {
   id     String @id @default(uuid())
