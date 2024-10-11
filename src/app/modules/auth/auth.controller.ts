@@ -11,7 +11,31 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     console.log(result);
 
     res.cookie('refreshToken', refreshToken, {
-      secure: false,
+      secure: config.env === 'production',
+      httpOnly: true,
+      // sameSite: 'none',
+      maxAge: 31536000000
+    });
+    res.send({
+      statusCode: 200,
+      success: true,
+      message: 'User logged in successfully',
+      data: result
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+const googleLogin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { ...loginData } = req.body;
+    const result = await authServices.googleLogin(loginData);
+    console.log('result', result);
+    const { refreshToken } = result;
+    console.log(result);
+
+    res.cookie('refreshToken', refreshToken, {
+      secure: config.env === 'production',
       httpOnly: true,
       // sameSite: 'none',
       maxAge: 31536000000
@@ -50,4 +74,4 @@ const refreshToken = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export const authController = { loginUser, refreshToken };
+export const authController = { loginUser, refreshToken, googleLogin };

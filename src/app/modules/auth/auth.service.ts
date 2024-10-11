@@ -53,6 +53,87 @@ const loginUser = async (payload: any): Promise<any> => {
   );
   return { accessToken, refreshToken };
 };
+const googleLogin = async (payload: any): Promise<any> => {
+  const { email }: { email: string } = payload;
+
+  let isUserExist: any;
+  const user = await prisma.user.findUnique({
+    where: {
+      email
+    }
+  });
+
+  if (!user) {
+    const { id,image, ...data } = payload;
+    if (!data.password) {
+      data.password = config.default_user_pass as string;
+    }
+
+    data.role = 'user';
+    data.profileImg = image;
+    data.verified = true;
+    data.password = '123456';
+    console.log('service', data);
+    const result = await prisma.user.create({
+      data
+    });
+    console.log('result', data);
+    const payloadData = {
+      userId: result!.id,
+      name: result!.name,
+      email: result!.email,
+      role: result!.role,
+      contactNo: result!.contactNo
+    };
+
+    //   create token
+    const accessToken = JwtHelper.createToken(
+      payloadData,
+
+      config.jwt.secret as Secret,
+      config.jwt.expires_in as string
+    );
+    const refreshToken = JwtHelper.createToken(
+      payloadData,
+      config.jwt.refresh_secret as Secret,
+      config.jwt.refresh_expires_in as string
+    );
+    return { accessToken, refreshToken };
+  }
+
+  if (user) {
+    isUserExist = user;
+  }
+
+  // if (isUserExist && isUserExist.verified !== true) {
+  //   throw new Error('Email is not verified please check your email');
+  // }
+
+  // if (isUserExist && isUserExist.password !== password) {
+  //   throw new Error('Password is incorrect');
+  // }
+  const payloadData = {
+    userId: isUserExist!.id,
+    name: isUserExist!.name,
+    email: isUserExist!.email,
+    role: isUserExist!.role,
+    contactNo: isUserExist!.contactNo
+  };
+
+  //   create token
+  const accessToken = JwtHelper.createToken(
+    payloadData,
+
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  );
+  const refreshToken = JwtHelper.createToken(
+    payloadData,
+    config.jwt.refresh_secret as Secret,
+    config.jwt.refresh_expires_in as string
+  );
+  return { accessToken, refreshToken };
+};
 
 const refreshToken = async (refreshToken: string) => {
   if (!refreshToken) {
@@ -91,4 +172,4 @@ const refreshToken = async (refreshToken: string) => {
     accessToken: newAccessToken
   };
 };
-export const authServices = { loginUser, refreshToken };
+export const authServices = { loginUser, googleLogin, refreshToken };
