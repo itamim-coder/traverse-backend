@@ -7,11 +7,16 @@ import routes from './app/routes';
 
 const app: Application = express();
 const corsOptions = {
-  origin: ['http://localhost:3000', 'https://tra-verse.vercel.app', 'https://traverse-web.vercel.app'],
-
+  origin: [
+    'http://localhost:3000',
+    'https://tra-verse.vercel.app',
+    'https://traverse-web.vercel.app'
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
   credentials: true,
   optionSuccessStatus: 200
-}; 
+};
 
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));
